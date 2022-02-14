@@ -22,7 +22,6 @@ function addTodo(e) {
 
 // ALERT
     createAlert(input.dataset.type, "Todo item added successfully.", "success");
-
 }
 
 //ADD TO LOCAL STORAGE
