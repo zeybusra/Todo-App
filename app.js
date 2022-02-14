@@ -11,10 +11,13 @@ $(".addForm").on('submit', addTodo)
 function addTodo(e) {
 
     e.preventDefault();
-
     let input = e.target.children[0].children[0];
 
-    addLiElement(input.value, input.dataset.type)
+    if (!uniqueTodo(input.value, input.dataset.type)) {
+        return
+    }
+
+    addLiElement(input.value, input.dataset.type);
 
     addTodoToStorage(input.value, input.dataset.type);
 
@@ -23,6 +26,21 @@ function addTodo(e) {
 // ALERT
     createAlert(input.dataset.type, "Todo item added successfully.", "success");
 }
+
+//VALIDATE UNIQ TODO OBJECT
+function uniqueTodo(value, type) {
+    let liElements = $(".list-group-item");
+
+    for (let i = 0; i < liElements.length; i++) {
+
+        if (value === liElements[i].dataset.text) {
+            createAlert(type, "Todo item is already added.", "danger");
+            return false
+        }
+    }
+    return true
+}
+
 
 //ADD TO LOCAL STORAGE
 function addTodoToStorage(newTodo, todoType) {
@@ -151,16 +169,22 @@ function saveEdit(e) {
     e.preventDefault();
 
     let input = e.target.children[0].children[0];
+
     let liElement = input.parentElement.parentElement.parentElement;
     let ulElement = liElement.parentElement;
     let todoType = ulElement.dataset.type
 
-    removeItemFromLocal(todoType, liElement.dataset.text);
+    if (input.value !== liElement.dataset.text) {
+        if (!uniqueTodo(input.value, ulElement.dataset.type)) {
+            return
+        }
 
-    addTodoToStorage(input.value, todoType);
+        removeItemFromLocal(todoType, liElement.dataset.text);
 
-    createAlert(todoType, "Todo is updated successfully.", "success");
+        addTodoToStorage(input.value, todoType);
 
+        createAlert(todoType, "Todo is updated successfully.", "success");
+    }
     liElement.dataset.text = input.value
     liElement.innerHTML = input.value + editClearGroup
 
